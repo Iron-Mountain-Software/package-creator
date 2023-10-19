@@ -10,14 +10,29 @@ namespace IronMountain.PackageCreator.Editor
     {
         public static Assembly FindAssembly(AssemblyDefinitionAsset assemblyDefinitionAsset)
         {
-            if (assemblyDefinitionAsset == null) return null;
+            return FindAssembly(assemblyDefinitionAsset.name);
+        }
+        
+        public static Assembly FindAssembly(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return null;
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var testAssembly in assemblies)
             {
                 if (testAssembly == null || string.IsNullOrWhiteSpace(testAssembly.FullName)) continue;
                 List<string> elements = testAssembly.FullName.Split(' ').ToList();
                 for (int i = 0; i < elements.Count; i++) elements[i] = elements[i].Trim(' ', ',');
-                if (elements.Contains(assemblyDefinitionAsset.name)) return testAssembly;
+                if (elements.Contains(name)) return testAssembly;
+            }
+            foreach (var testAssembly in assemblies)
+            {
+                if (testAssembly == null || string.IsNullOrWhiteSpace(testAssembly.FullName)) continue;
+                List<string> elements = testAssembly.FullName.Split(' ').ToList();
+                for (int i = 0; i < elements.Count; i++) elements[i] = elements[i].Trim(' ', ',');
+                foreach (var element in elements)
+                {
+                    if (element.Contains(name)) return testAssembly;
+                }
             }
             return null;
         }

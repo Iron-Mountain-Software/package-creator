@@ -59,6 +59,7 @@ namespace IronMountain.PackageCreator.Editor
             if (manifest != null)
             {
                 documentation.AppendLine(H1Start + manifest.DisplayName + H1End);
+                documentation.AppendLine("Version: " + manifest.Version);
                 documentation.AppendLine(manifest.Description);
                 documentation.AppendLine();
 
@@ -69,6 +70,17 @@ namespace IronMountain.PackageCreator.Editor
                     foreach (string useCase in manifest.UseCases)
                     {
                         documentation.AppendLine(UnorderedListItemStart + useCase + UnorderedListItemEnd);
+                    }
+                    documentation.Append(UnorderedListEnd);
+                }
+                
+                if (manifest.Dependencies.Count > 0)
+                {
+                    documentation.AppendLine(H2Start + "Dependencies:" + H2End);
+                    documentation.Append(UnorderedListStart);
+                    foreach (string dependency in manifest.Dependencies.Keys)
+                    {
+                        documentation.AppendLine(UnorderedListItemStart + dependency + " (" + manifest.Dependencies[dependency] + ")" + UnorderedListItemEnd);
                     }
                     documentation.Append(UnorderedListEnd);
                 }
@@ -153,21 +165,21 @@ namespace IronMountain.PackageCreator.Editor
             return documentation.ToString();
         }
 
-        public static string GetSourceImage(PackageSource source)
+        public static string GetSourceImage(PackageResource resource)
         {
-            if (source == null) return string.Empty;
+            if (resource == null) return string.Empty;
             StringBuilder result = new StringBuilder();
-            string imageURL = GetImageURL(source.Type);
+            string imageURL = GetImageURL(resource.Type);
             if (_exportType == ExportType.HTML)
             {
-                result.Append("<a href='" + source.URL + "' target='_blank'>");
-                result.Append("<img src='" + imageURL + "' alt='" + source.Type + "' title='" + source.Type + "'>");
+                result.Append("<a href='" + resource.URL + "' target='_blank'>");
+                result.Append("<img src='" + imageURL + "' alt='" + resource.Type + "' title='" + resource.Type + "'>");
                 result.Append("</a>");
             }
             else if (_exportType == ExportType.Markdown)
             {
                 result.Append("[<img src='" + imageURL + "'>]");
-                result.Append("(" + source.URL + ")");
+                result.Append("(" + resource.URL + ")");
             }
             return result.ToString();
         }

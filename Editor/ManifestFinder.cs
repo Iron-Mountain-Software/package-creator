@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;
 
@@ -20,7 +21,8 @@ namespace IronMountain.PackageCreator.Editor
                 TextAsset manifestFile = (TextAsset) AssetDatabase.LoadAssetAtPath(relativeManifestPath, typeof(TextAsset));
                 if (manifestFile)
                 {
-                    PackageManifest manifest = JsonUtility.FromJson<PackageManifest>(manifestFile.text);
+                    PackageManifest manifest = JsonConvert.DeserializeObject<PackageManifest>(manifestFile.text);
+                    manifest.TextAsset = manifestFile;
                     manifest.RelativeDirectory = relativeDirectory;
                     manifest.AbsoluteDirectory = Path.Join(Path.GetDirectoryName(Application.dataPath), relativeDirectory);
                     return manifest;
