@@ -1,6 +1,6 @@
 {
   "name": "com.iron-mountain.package-creator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "displayName": "Package Creator",
   "description": "Tools for creating well documented Unity packages.",
   "useCases": [

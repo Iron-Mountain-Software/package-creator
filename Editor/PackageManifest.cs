@@ -64,5 +64,8 @@ namespace IronMountain.PackageCreator.Editor
         public string License => license;
         public PackageManifestBugs Bugs => bugs;
         public string Homepage => homepage;
+
+        public string RelativeDirectory { get; set; }
+        public string AbsoluteDirectory { get; set; }
     }
 }

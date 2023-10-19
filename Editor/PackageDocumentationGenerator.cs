@@ -1,20 +1,17 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using UnityEditor;
 using UnityEditorInternal;
-using UnityEngine;
 
 namespace IronMountain.PackageCreator.Editor
 {
     public static class PackageDocumentationGenerator
     {
-        private enum ExportType { Markdown, HTML };
+        public enum ExportType { Markdown, HTML };
         
-        private static PackageManifest _packageManifest;
+        private static string _readmePath;
         private static ExportType _exportType;
 
         private static string BoldStart => _exportType == ExportType.Markdown ? "**" : "<b>";
@@ -38,68 +35,11 @@ namespace IronMountain.PackageCreator.Editor
         private static string UnorderedListEnd => _exportType == ExportType.Markdown ? string.Empty : "</ul>";
         private static string UnorderedListItemStart => _exportType == ExportType.Markdown ? "* " : "<li>";
         private static string UnorderedListItemEnd => _exportType == ExportType.Markdown ? string.Empty : "</li>";
-    
-        [MenuItem("Assets/Package Creator/Write Documentation/Markdown", true)]
-        static bool ValidateCreateMarkdownDocumentation()
-        {
-            return Selection.activeObject is AssemblyDefinitionAsset;
-        }
-    
-        [MenuItem("Assets/Package Creator/Write Documentation/HTML", true)]
-        static bool ValidateCreateHTMLDocumentation()
-        {
-            return Selection.activeObject is AssemblyDefinitionAsset;
-        }
- 
-        [MenuItem("Assets/Package Creator/Write Documentation/Markdown", false, 0)]
-        private static void CreateMarkdownDocumentation(MenuCommand menuCommand)
-        {
-            if (Selection.activeObject is not AssemblyDefinitionAsset assemblyDefinitionAsset) return;
-            _exportType = ExportType.Markdown;
-            RefreshPackageManifest(assemblyDefinitionAsset);
-            Document(assemblyDefinitionAsset);
-        }
-    
-        [MenuItem("Assets/Package Creator/Write Documentation/HTML", false, 0)]
-        private static void CreateHTMLDocumentation(MenuCommand menuCommand)
-        {
-            if (Selection.activeObject is not AssemblyDefinitionAsset assemblyDefinitionAsset) return;
-            _exportType = ExportType.HTML;
-            RefreshPackageManifest(assemblyDefinitionAsset);
-            Document(assemblyDefinitionAsset);
-        }
 
-        private static void RefreshPackageManifest(AssemblyDefinitionAsset assemblyDefinitionAsset)
+        public static string Document(Assembly assembly, PackageManifest manifest, ExportType exportType)
         {
-            _packageManifest = null;
-            string path = AssetDatabase.GetAssetPath(assemblyDefinitionAsset);
-            string directory = Path.GetDirectoryName(path);
-            List<string> pieces = directory.Split(Path.DirectorySeparatorChar).ToList();
-            while (pieces.Count > 0)
-            {
-                string packagePath = Path.Combine(string.Join(Path.DirectorySeparatorChar, pieces), "Package.json");
-                TextAsset manifestFile = (TextAsset) AssetDatabase.LoadAssetAtPath(packagePath, typeof(TextAsset));
-                if (manifestFile)
-                {
-                    _packageManifest = JsonUtility.FromJson<PackageManifest>(manifestFile.text);
-                    break;
-                }
-                pieces.RemoveAt(pieces.Count - 1);
-            }
-        }
-
-        private static void Document(AssemblyDefinitionAsset assemblyDefinitionAsset)
-        {
-            Assembly assembly = null;
-            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-        
-            foreach (var test in assemblies)
-            {
-                if (!test.FullName.Contains(assemblyDefinitionAsset.name)) continue;
-                assembly = test;
-            }
-
-            if (assembly == null) return;
+            if (assembly == null) return string.Empty;
+            _exportType = exportType;
 
             StringBuilder documentation = new StringBuilder();
         
@@ -115,35 +55,34 @@ namespace IronMountain.PackageCreator.Editor
             var keys = folders.Keys.ToList();
             keys.Sort();
             string root = FindRoot(keys);
-
-            documentation.AppendLine(H1Start + GetAssemblyName(assemblyDefinitionAsset) + H1End);
-
-            if (_packageManifest != null)
+            
+            if (manifest != null)
             {
-                documentation.AppendLine(_packageManifest.Description);
+                documentation.AppendLine(H1Start + manifest.DisplayName + H1End);
+                documentation.AppendLine(manifest.Description);
                 documentation.AppendLine();
 
-                if (_packageManifest.UseCases.Count > 0)
+                if (manifest.UseCases.Count > 0)
                 {
                     documentation.AppendLine(H2Start + "Use Cases:" + H2End);
                     documentation.Append(UnorderedListStart);
-                    foreach (string useCase in _packageManifest.UseCases)
+                    foreach (string useCase in manifest.UseCases)
                     {
                         documentation.AppendLine(UnorderedListItemStart + useCase + UnorderedListItemEnd);
                     }
                     documentation.Append(UnorderedListEnd);
                 }
 
-                if (!string.IsNullOrWhiteSpace(_packageManifest.Directions))
+                if (!string.IsNullOrWhiteSpace(manifest.Directions))
                 {
                     documentation.AppendLine(H2Start + "Directions for Use:" + H2End);
-                    documentation.AppendLine(_packageManifest.Directions);
+                    documentation.AppendLine(manifest.Directions);
                 }
 
-                if (_packageManifest.Sources.Count > 0)
+                if (manifest.Sources.Count > 0)
                 {
                     documentation.AppendLine(H2Start + "Package Mirrors:" + H2End);
-                    foreach (var source in _packageManifest.Sources)
+                    foreach (var source in manifest.Sources)
                     {
                         documentation.Append(GetSourceImage(source));
                     }
@@ -211,9 +150,7 @@ namespace IronMountain.PackageCreator.Editor
                 documentation.Append(OrderedListEnd);
             }
 
-            string output = documentation.ToString();
-            Debug.Log(output);
-            EditorGUIUtility.systemCopyBuffer = output;
+            return documentation.ToString();
         }
 
         public static string GetSourceImage(PackageSource source)
@@ -261,6 +198,7 @@ namespace IronMountain.PackageCreator.Editor
             else if (type.IsClass) entityType = "class";
             string baseType = type.BaseType != null ? type.BaseType.Name : string.Empty;
             if (baseType == "ValueType") baseType = string.Empty;
+            else if (baseType == "Object") baseType = string.Empty;
             string extension = ! string.IsNullOrWhiteSpace(baseType) ? " : " + baseType : string.Empty;
             return accessModifier + " " + entityType + " " + BoldStart + type.Name + BoldEnd + extension;
         }
@@ -358,26 +296,6 @@ namespace IronMountain.PackageCreator.Editor
                 methods.Add(method);
             }
             return methods;
-        }
-
-        private static string GetAssemblyName(AssemblyDefinitionAsset assemblyDefinitionAsset)
-        {
-            string[] bits = assemblyDefinitionAsset.name.Split('.');
-            if (bits.Length < 3) return string.Empty;
-            string rawName = bits[2];
-            string[] words = rawName.Split('-');
-            for (int i = 0; i < words.Length; i++)
-            {
-                if (words[i].Length == 1)
-                {
-                    words[i] = Char.ToUpper(words[i][0]).ToString();
-                }
-                else if (words[i].Length > 1)
-                {
-                    words[i] = Char.ToUpper(words[i][0]) + words[i][1..];
-                }
-            }
-            return string.Join(' ', words);
         }
 
         private static string GetFolder(string root, string path)
