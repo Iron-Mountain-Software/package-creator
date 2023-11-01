@@ -1,5 +1,3 @@
-using System;
-using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -17,7 +15,7 @@ namespace IronMountain.PackageCreator.Editor
         private Vector2 _descriptionScroll = Vector2.zero;
         private Vector2 _directionsScroll = Vector2.zero;
 
-        [MenuItem("Assets/Package Creator/Open Window", false, 0)]
+        [MenuItem("Assets/Open Package Creator", false, 0)]
         private static void OpenWindow()
         {
             if (!Selection.activeObject) return;
@@ -223,23 +221,40 @@ namespace IronMountain.PackageCreator.Editor
             }
             EditorGUILayout.EndHorizontal();
             
+            EditorGUILayout.Space();
+                
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("Copy Markdown") && _manifest != null)
+            {
+                GUI.FocusControl(null);
+                EditorGUIUtility.systemCopyBuffer = _manifest.GetMarkdownDocumentation(false);
+            }
+            if (GUILayout.Button("Copy HTML") && _manifest != null)
+            {
+                GUI.FocusControl(null);
+                EditorGUIUtility.systemCopyBuffer = _manifest.GetHTMLDocumentation(false);
+            }
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.Space();
+
+            EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Refresh README") && _manifest != null)
             {
                 GUI.FocusControl(null);
                 _manifest.GenerateREADME();
             }
-            
             if (GUILayout.Button("Export") && _manifest != null)
             {
                 GUI.FocusControl(null);
                 _manifest.Export();
             }
-            
             if (GUILayout.Button("Open Package in Finder") && _manifest != null)
             {
                 GUI.FocusControl(null);
                 EditorUtility.RevealInFinder(_manifest.RelativeDirectory);
             }
+            EditorGUILayout.EndHorizontal();
         }
     }
 }

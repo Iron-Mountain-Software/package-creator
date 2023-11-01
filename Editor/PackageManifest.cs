@@ -178,16 +178,24 @@ namespace IronMountain.PackageCreator.Editor
             AssetDatabase.Refresh();
         }
 
-        public void GenerateREADME()
+        public string GetHTMLDocumentation(bool includeTitle)
         {
             Assembly assembly = AssemblyFinder.FindAssembly(name);
-            string documentation = PackageDocumentationGenerator.Document(assembly, this, PackageDocumentationGenerator.ExportType.Markdown);
-            if (!string.IsNullOrWhiteSpace(AbsoluteDirectory))
-            {
-                string readmePath = Path.Join(AbsoluteDirectory, "README.md");
-                File.WriteAllText(readmePath, documentation);
-                AssetDatabase.Refresh();
-            }
+            return PackageDocumentationGenerator.Document(assembly, this, PackageDocumentationGenerator.ExportType.HTML, includeTitle);
+        }
+        
+        public string GetMarkdownDocumentation(bool includeTitle)
+        {
+            Assembly assembly = AssemblyFinder.FindAssembly(name);
+            return PackageDocumentationGenerator.Document(assembly, this, PackageDocumentationGenerator.ExportType.Markdown, includeTitle);
+        }
+
+        public void GenerateREADME()
+        {
+            if (string.IsNullOrWhiteSpace(AbsoluteDirectory)) return;
+            string readmePath = Path.Join(AbsoluteDirectory, "README.md");
+            File.WriteAllText(readmePath, GetMarkdownDocumentation(true));
+            AssetDatabase.Refresh();
         }
 
         public void Export()

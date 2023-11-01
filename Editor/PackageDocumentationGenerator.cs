@@ -14,6 +14,8 @@ namespace IronMountain.PackageCreator.Editor
         private static string _readmePath;
         private static ExportType _exportType;
 
+        private static string NewLine => _exportType == ExportType.Markdown ? string.Empty : "<br>";
+        private static string HorizontalLine => _exportType == ExportType.Markdown ? "---" : "<hr>";
         private static string BoldStart => _exportType == ExportType.Markdown ? "**" : "<b>";
         private static string BoldEnd => _exportType == ExportType.Markdown ? "**" : "</b>";
         private static string ItalicsStart => _exportType == ExportType.Markdown ? "*" : "<i>";
@@ -36,7 +38,7 @@ namespace IronMountain.PackageCreator.Editor
         private static string UnorderedListItemStart => _exportType == ExportType.Markdown ? "* " : "<li>";
         private static string UnorderedListItemEnd => _exportType == ExportType.Markdown ? string.Empty : "</li>";
 
-        public static string Document(Assembly assembly, PackageManifest manifest, ExportType exportType)
+        public static string Document(Assembly assembly, PackageManifest manifest, ExportType exportType, bool includeTitle)
         {
             if (assembly == null) return string.Empty;
             _exportType = exportType;
@@ -58,10 +60,12 @@ namespace IronMountain.PackageCreator.Editor
             
             if (manifest != null)
             {
-                documentation.AppendLine(H1Start + manifest.DisplayName + H1End);
-                documentation.AppendLine("Version: " + manifest.Version);
+                if (includeTitle) documentation.AppendLine(H1Start + manifest.DisplayName + H1End);
+                documentation.AppendLine(HorizontalLine);
+                documentation.AppendLine(ItalicsStart + "Version: " + manifest.Version + ItalicsEnd);
+                documentation.AppendLine(HorizontalLine);
+                documentation.AppendLine(H2Start + "Description:" + H2End);
                 documentation.AppendLine(manifest.Description);
-                documentation.AppendLine();
 
                 if (manifest.UseCases.Count > 0)
                 {
@@ -91,6 +95,8 @@ namespace IronMountain.PackageCreator.Editor
                     documentation.AppendLine(manifest.Directions);
                 }
 
+                documentation.AppendLine(HorizontalLine);
+
                 if (manifest.Sources.Count > 0)
                 {
                     documentation.AppendLine(H2Start + "Package Mirrors:" + H2End);
@@ -101,7 +107,8 @@ namespace IronMountain.PackageCreator.Editor
                     documentation.AppendLine();
                 }
             }
-
+            
+            documentation.AppendLine(HorizontalLine);
             documentation.AppendLine(H2Start + "Key Scripts & Components:" + H2End);
 
             foreach (var key in keys)

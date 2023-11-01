@@ -1,6 +1,6 @@
 {
   "name": "com.iron-mountain.package-creator",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "displayName": "Package Creator",
   "author": "Chris Monteferrante <ludachrismonte@gmail.com>",
   "unity": "2019.1",
