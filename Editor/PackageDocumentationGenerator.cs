@@ -61,15 +61,15 @@ namespace IronMountain.PackageCreator.Editor
             if (manifest != null)
             {
                 if (includeTitle) documentation.AppendLine(H1Start + manifest.DisplayName + H1End);
-                documentation.AppendLine(HorizontalLine);
+                if (_exportType == ExportType.HTML) documentation.AppendLine(HorizontalLine);
                 documentation.AppendLine(ItalicsStart + "Version: " + manifest.Version + ItalicsEnd);
-                documentation.AppendLine(HorizontalLine);
-                documentation.AppendLine(H2Start + "Description:" + H2End);
+                if (_exportType == ExportType.HTML) documentation.AppendLine(HorizontalLine);
+                documentation.AppendLine(H2Start + "Description: " + H2End);
                 documentation.AppendLine(manifest.Description);
 
                 if (manifest.UseCases.Count > 0)
                 {
-                    documentation.AppendLine(H2Start + "Use Cases:" + H2End);
+                    documentation.AppendLine(H2Start + "Use Cases: " + H2End);
                     documentation.Append(UnorderedListStart);
                     foreach (string useCase in manifest.UseCases)
                     {
@@ -80,7 +80,7 @@ namespace IronMountain.PackageCreator.Editor
                 
                 if (manifest.Dependencies.Count > 0)
                 {
-                    documentation.AppendLine(H2Start + "Dependencies:" + H2End);
+                    documentation.AppendLine(H2Start + "Dependencies: " + H2End);
                     documentation.Append(UnorderedListStart);
                     foreach (string dependency in manifest.Dependencies.Keys)
                     {
@@ -91,15 +91,15 @@ namespace IronMountain.PackageCreator.Editor
 
                 if (!string.IsNullOrWhiteSpace(manifest.Directions))
                 {
-                    documentation.AppendLine(H2Start + "Directions for Use:" + H2End);
+                    documentation.AppendLine(H2Start + "Directions for Use: " + H2End);
                     documentation.AppendLine(manifest.Directions);
                 }
 
-                documentation.AppendLine(HorizontalLine);
+                if (_exportType == ExportType.HTML) documentation.AppendLine(HorizontalLine);
 
                 if (manifest.Sources.Count > 0)
                 {
-                    documentation.AppendLine(H2Start + "Package Mirrors:" + H2End);
+                    documentation.AppendLine(H2Start + "Package Mirrors: " + H2End);
                     foreach (var source in manifest.Sources)
                     {
                         documentation.Append(GetSourceImage(source));
@@ -109,7 +109,7 @@ namespace IronMountain.PackageCreator.Editor
             }
             
             documentation.AppendLine(HorizontalLine);
-            documentation.AppendLine(H2Start + "Key Scripts & Components:" + H2End);
+            documentation.AppendLine(H2Start + "Key Scripts & Components: " + H2End);
 
             foreach (var key in keys)
             {

@@ -1,20 +1,17 @@
 # Package Creator
----
-*Version: 1.0.3*
----
-## Description:
+*Version: 1.0.5*
+## Description: 
 Tools for creating well documented Unity packages.
-## Use Cases:
+## Use Cases: 
 * Instantly document an assembly in Markdown or HTML format.
-## Dependencies:
+## Dependencies: 
 * com.unity.nuget.newtonsoft-json (3.1.0)
-## Directions for Use:
+## Directions for Use: 
 Right-click an assembly and select Package Creator > Write Documentation. If a package.json file is in a parent folder of your assembly, the documentation writer will use it to write better content.
----
-## Package Mirrors:
+## Package Mirrors: 
 [<img src='https://img.itch.zone/aW1nLzEzNzQ2ODg3LnBuZw==/original/npRUfq.png'>](https://github.com/Iron-Mountain-Software/package-creator.git)[<img src='https://img.itch.zone/aW1nLzEzNzQ2ODkyLnBuZw==/original/Fq0ORM.png'>](https://www.npmjs.com/package/com.iron-mountain.package-creator)[<img src='https://img.itch.zone/aW1nLzEzNzQ2ODk4LnBuZw==/original/Rv4m96.png'>](https://iron-mountain.itch.io/package-creator)
 ---
-## Key Scripts & Components:
+## Key Scripts & Components: 
 1. public class **AssemblyFinder**
 1. public static class **ManifestFinder**
 1. public class **PackageDependency**
