@@ -1,5 +1,5 @@
 # Package Creator
-*Version: 1.0.6*
+*Version: 1.0.7*
 ## Description: 
 Tools for creating well documented Unity packages.
 ## Use Cases: 

@@ -65,7 +65,7 @@ namespace IronMountain.PackageCreator.Editor
                 documentation.AppendLine(ItalicsStart + "Version: " + manifest.version + ItalicsEnd);
                 if (_exportType == ExportType.HTML) documentation.AppendLine(HorizontalLine);
                 documentation.AppendLine(H2Start + "Description: " + H2End);
-                documentation.AppendLine(manifest.description);
+                documentation.AppendLine(manifest.description.Replace("\n", NewLine));
 
                 if (manifest.useCases.Count > 0)
                 {
@@ -95,12 +95,14 @@ namespace IronMountain.PackageCreator.Editor
                     documentation.Append(OrderedListStart);
                     foreach (Instruction instruction in manifest.instructions)
                     {
-                        documentation.AppendLine(OrderedListItemStart + instruction.text + OrderedListItemEnd);
+                        string instructionContent = instruction.text.Replace("\n", NewLine);
+                        documentation.AppendLine(OrderedListItemStart + instructionContent + OrderedListItemEnd);
                         if (instruction.details.Count > 0)
                         {
                             documentation.Append(OrderedListStart);
                             foreach (string detail in instruction.details)
                             {
+                                string detailContent = detail.Replace("\n", NewLine);
                                 documentation.AppendLine(ListIndent + OrderedListItemStart + detail + OrderedListItemEnd);
                             }
                             documentation.Append(OrderedListEnd);

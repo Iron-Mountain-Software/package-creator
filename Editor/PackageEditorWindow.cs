@@ -12,8 +12,6 @@ namespace IronMountain.PackageCreator.Editor
         
         private Rect _contentSection;
         private Vector2 _contentScroll = Vector2.zero;
-        private Vector2 _descriptionScroll = Vector2.zero;
-        private Vector2 _directionsScroll = Vector2.zero;
 
         [MenuItem("Assets/Open Package Creator", false, 0)]
         private static void OpenWindow()
@@ -34,8 +32,6 @@ namespace IronMountain.PackageCreator.Editor
             if (!Current) Current = GetWindow<PackageEditorWindow>();
             Current.name = manifest.displayName;
             Current.minSize = new Vector2(525, 700);
-            Current._descriptionScroll = Vector2.zero;
-            Current._directionsScroll = Vector2.zero;
             Current._manifest = manifest;
             Current.Focus();
         }
@@ -101,9 +97,7 @@ namespace IronMountain.PackageCreator.Editor
             EditorStyles.textField.wordWrap = true;
             EditorGUILayout.LabelField("Description");
             EditorGUI.indentLevel++;
-            _descriptionScroll = EditorGUILayout.BeginScrollView(_descriptionScroll, GUILayout.Height(50));
-            _manifest.description = EditorGUILayout.TextArea(_manifest.description, GUILayout.ExpandHeight(true));
-            EditorGUILayout.EndScrollView();
+            _manifest.description = EditorGUILayout.TextArea(_manifest.description);
             EditorGUI.indentLevel--;
         }
         
