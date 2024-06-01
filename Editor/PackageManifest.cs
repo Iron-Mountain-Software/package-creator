@@ -12,143 +12,57 @@ namespace IronMountain.PackageCreator.Editor
     [Serializable]
     public class PackageDependency
     {
-        [SerializeField] private string name;
-        [SerializeField] private string version;
-        
-        public string Name
-        {
-            get => name;
-            set => name = value;
-        }
-        
-        public string Version
-        {
-            get => version;
-            set => version = value;
-        }
+        [SerializeField] public string name;
+        [SerializeField] public string version;
     }
     
     [Serializable]
     public class PackageResource
     {
-        [SerializeField] private string type = "git";
-        [SerializeField] private string url;
-        
-        public string Type
-        {
-            get => type;
-            set => type = value;
-        }
-        
-        public string URL
-        {
-            get => url;
-            set => url = value;
-        }
+        [SerializeField] public string type = "git";
+        [SerializeField] public string url;
     }
         
     [Serializable]
     public class PackageManifestSample
     {
-        [SerializeField] private string displayName;
-        [SerializeField] private string description;
-        [SerializeField] private string path;
+        [SerializeField] public string displayName;
+        [SerializeField] public string description;
+        [SerializeField] public string path;
+    }
+    
+    [Serializable]
+    public class Instruction
+    {
+        [SerializeField] public string text;
+        [SerializeField] public List<string> details = new();
 
-        public string DisplayName => displayName;
-        public string Description => description;
-        public string Path => path;
+        public Instruction(string text)
+        {
+            this.text = text;
+        }
     }
 
     [Serializable]
     public class PackageManifest
     {
-        [SerializeField] private string name;
-        [SerializeField] private string version;
-        [SerializeField] private string displayName;
-        [SerializeField] private string author;
-        [SerializeField] private string unity;
-        [SerializeField] private string type;
-        [SerializeField] private string license;
-        [SerializeField] private string homepage;
-        [SerializeField] private PackageResource bugs = new ();
-        [SerializeField] private PackageResource repository = new ();
-        [SerializeField] private string description;
-        [SerializeField] private List<string> useCases = new ();
-        [SerializeField] private string directions;
-        [SerializeField] private List<string> keywords = new ();
-        [SerializeField] private List<PackageResource> sources = new ();
-        [SerializeField] private Dictionary<string, string> dependencies = new ();
+        [SerializeField] public string name;
+        [SerializeField] public string version;
+        [SerializeField] public string displayName;
+        [SerializeField] public string author;
+        [SerializeField] public string unity;
+        [SerializeField] public string type;
+        [SerializeField] public string license;
+        [SerializeField] public string homepage;
+        [SerializeField] public PackageResource bugs = new ();
+        [SerializeField] public PackageResource repository = new ();
+        [SerializeField] public string description;
+        [SerializeField] public List<string> useCases = new ();
+        [SerializeField] public List<Instruction> instructions = new ();
+        [SerializeField] public List<string> keywords = new ();
+        [SerializeField] public List<PackageResource> sources = new ();
+        [SerializeField] public Dictionary<string, string> dependencies = new ();
         
-        public string Name
-        {
-            get => name;
-            set => name = value;
-        }
-
-        public string Version
-        {
-            get => version;
-            set => version = value;
-        }
-        
-        public string DisplayName
-        {
-            get => displayName;
-            set => displayName = value;
-        }
-        
-        public string Author
-        {
-            get => author;
-            set => author = value;
-        }
-        
-        public string Unity
-        {
-            get => unity;
-            set => unity = value;
-        }
-        
-        public string Type
-        {
-            get => type;
-            set => type = value;
-        }
-        
-        public string License
-        {
-            get => license;
-            set => license = value;
-        }
-        
-        public string Homepage
-        {
-            get => homepage;
-            set => homepage = value;
-        }
-        
-        public PackageResource Bugs => bugs;
-        public PackageResource Repository => repository;
-
-        public string Description
-        {
-            get => description;
-            set => description = value;
-        }
-        
-        public List<string> UseCases => useCases;
-        
-        public string Directions
-        {
-            get => directions;
-            set => directions = value;
-        }
-        
-        public List<string> Keywords => keywords;
-
-        public List<PackageResource> Sources => sources;
-        public Dictionary<string, string> Dependencies => dependencies;
-
         [JsonIgnore]
         public TextAsset TextAsset { get; set; }
         

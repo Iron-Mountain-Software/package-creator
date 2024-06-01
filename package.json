@@ -1,6 +1,6 @@
 {
   "name": "com.iron-mountain.package-creator",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "displayName": "Package Creator",
   "author": "Chris Monteferrante <ludachrismonte@gmail.com>",
   "unity": "2019.1",
@@ -19,7 +19,20 @@
   "useCases": [
     "Instantly document an assembly in Markdown or HTML format."
   ],
-  "directions": "Right-click an assembly and select Package Creator > Write Documentation. If a package.json file is in a parent folder of your assembly, the documentation writer will use it to write better content.",
+  "instructions": [
+    {
+      "text": "In Unity, right click any file within a package and select \"Open Package Creator\". ",
+      "details": []
+    },
+    {
+      "text": "Use the Package Editor Window to edit package details.",
+      "details": []
+    },
+    {
+      "text": "Click Apply.",
+      "details": []
+    }
+  ],
   "keywords": [
     "tools"
   ],

@@ -32,7 +32,7 @@ namespace IronMountain.PackageCreator.Editor
         {
             if (manifest == null) return;
             if (!Current) Current = GetWindow<PackageEditorWindow>();
-            Current.name = manifest.DisplayName;
+            Current.name = manifest.displayName;
             Current.minSize = new Vector2(525, 700);
             Current._descriptionScroll = Vector2.zero;
             Current._directionsScroll = Vector2.zero;
@@ -58,17 +58,17 @@ namespace IronMountain.PackageCreator.Editor
                 
                 EditorStyles.textField.wordWrap = false;
                 
-                _manifest.Name = EditorGUILayout.TextField("Name", _manifest.Name);
-                _manifest.Version = EditorGUILayout.TextField("Version", _manifest.Version);
-                _manifest.DisplayName = EditorGUILayout.TextField("Display Name", _manifest.DisplayName);
-                _manifest.Author = EditorGUILayout.TextField("Author", _manifest.Author);
-                _manifest.Unity = EditorGUILayout.TextField("Unity", _manifest.Unity);
-                _manifest.Type = EditorGUILayout.TextField("Type", _manifest.Type);
-                _manifest.License = EditorGUILayout.TextField("License", _manifest.License);
-                _manifest.Homepage = EditorGUILayout.TextField("Homepage", _manifest.Homepage);
-                _manifest.Bugs.URL = EditorGUILayout.TextField("Bugs", _manifest.Bugs.URL);
-                _manifest.Repository.Type = EditorGUILayout.TextField("Repository Type", _manifest.Repository.Type);
-                _manifest.Repository.URL = EditorGUILayout.TextField("Repository URL", _manifest.Repository.URL);
+                _manifest.name = EditorGUILayout.TextField("Name", _manifest.name);
+                _manifest.version = EditorGUILayout.TextField("Version", _manifest.version);
+                _manifest.displayName = EditorGUILayout.TextField("Display Name", _manifest.displayName);
+                _manifest.author = EditorGUILayout.TextField("Author", _manifest.author);
+                _manifest.unity = EditorGUILayout.TextField("Unity", _manifest.unity);
+                _manifest.type = EditorGUILayout.TextField("Type", _manifest.type);
+                _manifest.license = EditorGUILayout.TextField("License", _manifest.license);
+                _manifest.homepage = DrawURLEditor("Homepage", _manifest.homepage);
+                _manifest.bugs.url = DrawURLEditor("Bugs", _manifest.bugs.url);
+                _manifest.repository.type = EditorGUILayout.TextField("Repository Type", _manifest.repository.type);
+                _manifest.repository.url = DrawURLEditor("Repository URL", _manifest.repository.url);
 
                 EditorStyles.textArea.wordWrap = true;
                 
@@ -100,11 +100,11 @@ namespace IronMountain.PackageCreator.Editor
         {
             EditorStyles.textField.wordWrap = true;
             EditorGUILayout.LabelField("Description");
-            EditorGUILayout.BeginVertical(GUILayout.Height(50));
+            EditorGUI.indentLevel++;
             _descriptionScroll = EditorGUILayout.BeginScrollView(_descriptionScroll, GUILayout.Height(50));
-            _manifest.Description = EditorGUILayout.TextArea(_manifest.Description, GUILayout.Height(50));
+            _manifest.description = EditorGUILayout.TextArea(_manifest.description, GUILayout.ExpandHeight(true));
             EditorGUILayout.EndScrollView();
-            EditorGUILayout.EndVertical();
+            EditorGUI.indentLevel--;
         }
         
         private void DrawUseCases()
@@ -113,32 +113,71 @@ namespace IronMountain.PackageCreator.Editor
             EditorGUILayout.LabelField("Use Cases");
             if (GUILayout.Button("+", GUILayout.MaxWidth(20)))
             {
-                _manifest.UseCases.Add("");
+                _manifest.useCases.Add("");
             }
             EditorGUILayout.EndHorizontal();
-            for (int i = 0; i < _manifest.UseCases.Count; i++)
+            for (int i = 0; i < _manifest.useCases.Count; i++)
             {
+                EditorGUI.indentLevel++;
                 EditorGUILayout.BeginHorizontal();
-                _manifest.UseCases[i] = EditorGUILayout.TextField(_manifest.UseCases[i]);
+                _manifest.useCases[i] = EditorGUILayout.TextField(_manifest.useCases[i]);
                 if (GUILayout.Button("-", GUILayout.MaxWidth(20)))
                 {
-                    _manifest.UseCases.RemoveAt(i);
+                    _manifest.useCases.RemoveAt(i);
                     EditorGUILayout.EndHorizontal();
                     return;
                 }
                 EditorGUILayout.EndHorizontal();
+                EditorGUI.indentLevel--;
             }
         }
         
         private void DrawDirections()
         {
-            EditorStyles.textField.wordWrap = true;
-            EditorGUILayout.LabelField("Directions");
-            EditorGUILayout.BeginVertical(GUILayout.Height(100));
-            _directionsScroll = EditorGUILayout.BeginScrollView(_directionsScroll, GUILayout.Height(100));
-            _manifest.Directions = EditorGUILayout.TextArea(_manifest.Directions, GUILayout.Height(100));
-            EditorGUILayout.EndScrollView();
-            EditorGUILayout.EndVertical();
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Instructions");
+            if (GUILayout.Button("+", GUILayout.MaxWidth(20)))
+            {
+                _manifest.instructions.Add(new Instruction(string.Empty));
+            }
+            EditorGUILayout.EndHorizontal();
+            
+            for (int i = 0; i < _manifest.instructions.Count; i++)
+            {
+                EditorGUI.indentLevel++;
+                EditorGUILayout.BeginHorizontal();
+                int label = i + 1;
+                EditorGUILayout.LabelField(label + ".", GUILayout.Width(33));
+                _manifest.instructions[i].text = EditorGUILayout.TextArea(_manifest.instructions[i].text);
+                if (GUILayout.Button("+", GUILayout.MaxWidth(20)))
+                {
+                    _manifest.instructions[i].details.Add(string.Empty);
+                }
+                if (GUILayout.Button("-", GUILayout.MaxWidth(20)))
+                {
+                    _manifest.instructions.RemoveAt(i);
+                    EditorGUILayout.EndHorizontal();
+                    return;
+                }
+                EditorGUILayout.EndHorizontal();
+                
+                for (int detail = 0; detail < _manifest.instructions[i].details.Count; detail++)
+                {
+                    EditorGUI.indentLevel++;
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField(string.Empty, GUILayout.Width(35));
+                    _manifest.instructions[i].details[detail] = EditorGUILayout.TextArea(_manifest.instructions[i].details[detail]);
+                    if (GUILayout.Button("-", GUILayout.MaxWidth(20)))
+                    {
+                        _manifest.instructions[i].details.RemoveAt(detail);
+                        EditorGUILayout.EndHorizontal();
+                        return;
+                    }
+                    EditorGUILayout.EndHorizontal();
+                    EditorGUI.indentLevel--;
+                }
+                EditorGUI.indentLevel--;
+            }
         }
         
         private void DrawKeywords()
@@ -147,20 +186,22 @@ namespace IronMountain.PackageCreator.Editor
             EditorGUILayout.LabelField("Keywords");
             if (GUILayout.Button("+", GUILayout.MaxWidth(20)))
             {
-                _manifest.Keywords.Add("");
+                _manifest.keywords.Add(string.Empty);
             }
             EditorGUILayout.EndHorizontal();
-            for (int i = 0; i < _manifest.Keywords.Count; i++)
+            for (int i = 0; i < _manifest.keywords.Count; i++)
             {
+                EditorGUI.indentLevel++;
                 EditorGUILayout.BeginHorizontal();
-                _manifest.Keywords[i] = EditorGUILayout.TextField(_manifest.Keywords[i]);
+                _manifest.keywords[i] = EditorGUILayout.TextField(_manifest.keywords[i]);
                 if (GUILayout.Button("-", GUILayout.MaxWidth(20)))
                 {
-                    _manifest.Keywords.RemoveAt(i);
+                    _manifest.keywords.RemoveAt(i);
                     EditorGUILayout.EndHorizontal();
                     return;
                 }
                 EditorGUILayout.EndHorizontal();
+                EditorGUI.indentLevel--;
             }
         }
         
@@ -170,23 +211,25 @@ namespace IronMountain.PackageCreator.Editor
             EditorGUILayout.LabelField("Sources");
             if (GUILayout.Button("+", GUILayout.MaxWidth(20)))
             {
-                _manifest.Sources.Add(new PackageResource());
+                _manifest.sources.Add(new PackageResource());
             }
             EditorGUILayout.EndHorizontal();
-            for (int i = 0; i < _manifest.Sources.Count; i++)
+            for (int i = 0; i < _manifest.sources.Count; i++)
             {
+                EditorGUI.indentLevel++;
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.BeginVertical();
-                _manifest.Sources[i].Type = EditorGUILayout.TextField(_manifest.Sources[i].Type);
-                _manifest.Sources[i].URL = EditorGUILayout.TextField(_manifest.Sources[i].URL);
+                _manifest.sources[i].type = EditorGUILayout.TextField(_manifest.sources[i].type);
+                _manifest.sources[i].url = DrawURLEditor(string.Empty, _manifest.sources[i].url);
                 EditorGUILayout.EndVertical();
                 if (GUILayout.Button("-", GUILayout.MaxWidth(20), GUILayout.MinHeight(EditorGUIUtility.singleLineHeight * 2)))
                 {
-                    _manifest.Sources.RemoveAt(i);
+                    _manifest.sources.RemoveAt(i);
                     EditorGUILayout.EndHorizontal();
                     return;
                 }
                 EditorGUILayout.EndHorizontal();
+                EditorGUI.indentLevel--;
                 EditorGUILayout.Space();
             }
         }
@@ -194,14 +237,16 @@ namespace IronMountain.PackageCreator.Editor
         private void DrawDependencies()
         {
             EditorGUILayout.LabelField("Dependencies");
-            foreach (var key in _manifest.Dependencies.Keys)
+            foreach (var key in _manifest.dependencies.Keys)
             {
+                EditorGUI.indentLevel++;
                 EditorGUILayout.BeginHorizontal();
                 EditorGUI.BeginDisabledGroup(true);
                 EditorGUILayout.TextField(key);
-                EditorGUILayout.TextField(_manifest.Dependencies[key], GUILayout.MaxWidth(100));
+                EditorGUILayout.TextField(_manifest.dependencies[key], GUILayout.MaxWidth(100));
                 EditorGUI.EndDisabledGroup();
                 EditorGUILayout.EndHorizontal();
+                EditorGUI.indentLevel--;
                 EditorGUILayout.Space();
             }
         }
@@ -255,6 +300,20 @@ namespace IronMountain.PackageCreator.Editor
                 EditorUtility.RevealInFinder(_manifest.RelativeDirectory);
             }
             EditorGUILayout.EndHorizontal();
+        }
+
+        private string DrawURLEditor(string label, string url)
+        {
+            EditorGUILayout.BeginHorizontal();
+            url = EditorGUILayout.TextField(label, url);
+            EditorGUI.BeginDisabledGroup(string.IsNullOrWhiteSpace(url));
+            if (GUILayout.Button("Open", GUILayout.Width(50)))
+            {
+                Application.OpenURL(url);
+            }
+            EditorGUI.EndDisabledGroup();
+            EditorGUILayout.EndHorizontal();
+            return url;
         }
     }
 }

@@ -60,47 +60,61 @@ namespace IronMountain.PackageCreator.Editor
             
             if (manifest != null)
             {
-                if (includeTitle) documentation.AppendLine(H1Start + manifest.DisplayName + H1End);
+                if (includeTitle) documentation.AppendLine(H1Start + manifest.displayName + H1End);
                 if (_exportType == ExportType.HTML) documentation.AppendLine(HorizontalLine);
-                documentation.AppendLine(ItalicsStart + "Version: " + manifest.Version + ItalicsEnd);
+                documentation.AppendLine(ItalicsStart + "Version: " + manifest.version + ItalicsEnd);
                 if (_exportType == ExportType.HTML) documentation.AppendLine(HorizontalLine);
                 documentation.AppendLine(H2Start + "Description: " + H2End);
-                documentation.AppendLine(manifest.Description);
+                documentation.AppendLine(manifest.description);
 
-                if (manifest.UseCases.Count > 0)
+                if (manifest.useCases.Count > 0)
                 {
                     documentation.AppendLine(H2Start + "Use Cases: " + H2End);
                     documentation.Append(UnorderedListStart);
-                    foreach (string useCase in manifest.UseCases)
+                    foreach (string useCase in manifest.useCases)
                     {
                         documentation.AppendLine(UnorderedListItemStart + useCase + UnorderedListItemEnd);
                     }
                     documentation.Append(UnorderedListEnd);
                 }
                 
-                if (manifest.Dependencies.Count > 0)
+                if (manifest.dependencies.Count > 0)
                 {
                     documentation.AppendLine(H2Start + "Dependencies: " + H2End);
                     documentation.Append(UnorderedListStart);
-                    foreach (string dependency in manifest.Dependencies.Keys)
+                    foreach (string dependency in manifest.dependencies.Keys)
                     {
-                        documentation.AppendLine(UnorderedListItemStart + dependency + " (" + manifest.Dependencies[dependency] + ")" + UnorderedListItemEnd);
+                        documentation.AppendLine(UnorderedListItemStart + dependency + " (" + manifest.dependencies[dependency] + ")" + UnorderedListItemEnd);
                     }
                     documentation.Append(UnorderedListEnd);
                 }
-
-                if (!string.IsNullOrWhiteSpace(manifest.Directions))
+                
+                if (manifest.instructions.Count > 0)
                 {
                     documentation.AppendLine(H2Start + "Directions for Use: " + H2End);
-                    documentation.AppendLine(manifest.Directions);
+                    documentation.Append(OrderedListStart);
+                    foreach (Instruction instruction in manifest.instructions)
+                    {
+                        documentation.AppendLine(OrderedListItemStart + instruction.text + OrderedListItemEnd);
+                        if (instruction.details.Count > 0)
+                        {
+                            documentation.Append(OrderedListStart);
+                            foreach (string detail in instruction.details)
+                            {
+                                documentation.AppendLine(ListIndent + OrderedListItemStart + detail + OrderedListItemEnd);
+                            }
+                            documentation.Append(OrderedListEnd);
+                        }
+                    }
+                    documentation.Append(OrderedListEnd);
                 }
 
                 if (_exportType == ExportType.HTML) documentation.AppendLine(HorizontalLine);
 
-                if (manifest.Sources.Count > 0)
+                if (manifest.sources.Count > 0)
                 {
                     documentation.AppendLine(H2Start + "Package Mirrors: " + H2End);
-                    foreach (var source in manifest.Sources)
+                    foreach (var source in manifest.sources)
                     {
                         documentation.Append(GetSourceImage(source));
                     }
@@ -176,17 +190,17 @@ namespace IronMountain.PackageCreator.Editor
         {
             if (resource == null) return string.Empty;
             StringBuilder result = new StringBuilder();
-            string imageURL = GetImageURL(resource.Type);
+            string imageURL = GetImageURL(resource.type);
             if (_exportType == ExportType.HTML)
             {
-                result.Append("<a href='" + resource.URL + "' target='_blank'>");
-                result.Append("<img src='" + imageURL + "' alt='" + resource.Type + "' title='" + resource.Type + "'>");
+                result.Append("<a href='" + resource.url + "' target='_blank'>");
+                result.Append("<img src='" + imageURL + "' alt='" + resource.type + "' title='" + resource.type + "'>");
                 result.Append("</a>");
             }
             else if (_exportType == ExportType.Markdown)
             {
                 result.Append("[<img src='" + imageURL + "'>]");
-                result.Append("(" + resource.URL + ")");
+                result.Append("(" + resource.url + ")");
             }
             return result.ToString();
         }
